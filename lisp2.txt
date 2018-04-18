@@ -1,0 +1,27 @@
+(defun insere (l d c)
+(if (null (car d))
+	(cons (car l) (cdr l)) ; nada n lista de disciplinas
+	(if (eql (caar l) d)
+		(if (null(cdr (cdadar l))) ; curso vazio
+			(cons (cons d (cons (cons (cons (caadar l) nil)
+									(cons (cons (car (cdadar l)) nil) c)) 
+			nil)) (cdr l)) ; nao existe 
+			(cons (car l) (cdr l)) ;ja existe um curso para essa disciplina	
+		)
+		(if(null(car l))
+			(cons (cons d (cons (cons (cons nil nil) 
+								 (cons (cons nil nil) c)) 
+			nil)) nil) ; disciplina nao existe
+			(cons (car l) (insere (cdr l) d c)) ; se ainda existirem disciplinas pego proxima
+		)
+	)
+)
+)
+
+(DEFUN VINCULAR-DISC-CURSO (DISCIPLINA CURSO BD) 
+	(IF(NULL (CAR DISCIPLINA))
+		(CONS (car BD) (cdr BD))
+		(VINCULAR-DISC-CURSO (CDR DISCIPLINA) CURSO 
+			(INSERE BD (CAR DISCIPLINA) CURSO )) 
+	)
+)
