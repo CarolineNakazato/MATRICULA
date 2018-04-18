@@ -101,7 +101,6 @@
 	)
 )
 
-
 (DEFUN VINCULAR-DISC-PROF (DISCIPLINAS PROF BD) 
 	(IF(NULL (CAR DISCIPLINAS))
 		(CONS (car BD) (cdr BD))
@@ -119,11 +118,52 @@
 
 )
 
+(DEFUN EXCLUIR (L E) 
+	(IF(NULL (CAR L))
+		NIL
+		(IF(EQL (CAR L) E)
+			(CDR L) 
+			(CONS (CAR L) (EXCLUIR (CDR L) E))
+		)
+	)
+)
+
+(DEFUN EXCLUIRM (L D A)
+	(if (eql (caar l) d)
+		(if (null(caadar l)) 
+			(cons (car l) (cdr l)) ; nao existe nenhum aluno
+			(if (existe (caadar  l) a)
+				(cons (cons d (cons (cons (EXCLUIR (caadar L) A)
+									(cons (cons (caar (cdadar l)) (cdar (cdadar l))) 
+									(cdr (cdadar l)))) 
+				nil)) (cdr l)) 
+				(cons (car l) (cdr l)); existem outros alunos, mas nao existe o que eu vou EXCLUIR 
+			)
+		)
+		(if(null(car l))
+			(cons (car l) (cdr l)) ; disciplina nao existe
+			(cons (car l) (EXCLUIRM (cdr l) d a)) ; se ainda existirem disciplinas pego proxima
+		)
+	)
+)
 
 
+(DEFUN EXCLUIR-DISC-ALUNO (DISCIPLINAS ALUNO BD) 
+	(IF(NULL (CAR DISCIPLINAS))
+		(CONS (car BD) (cdr BD))
+		(EXCLUIR-DISC-ALUNO (CDR DISCIPLINAS) ALUNO 
+			(EXCLUIRM BD (CAR DISCIPLINAS) ALUNO )) 
+	)
+)
 
+(DEFUN CANCELAR-MATRICULA (ALUNOS DISCIPLINAS BD)
+	(IF(NULL (CAR ALUNOS))
+		(CONS (car BD) (cdr BD))
+		(CANCELAR-MATRICULA  (CDR ALUNOS) DISCIPLINAS
+			(EXCLUIR-DISC-ALUNO DISCIPLINAS (CAR ALUNOS)  BD)) 
+	)
 
-
+)
 
 (insere '((2 ((2) (3) )) (1 ((2) (3) ))) 1 4)
 (cons (cons 1 (cons (cons (cons 2 nil)(cons (cons 3 nil) 4)) nil)) nil)
