@@ -1,6 +1,4 @@
 (defun insere (l d c)
-(if (null (car d))
-	(cons (car l) (cdr l)) ; nada n lista de disciplinas
 	(if (eql (caar l) d)
 		(if (null(cdr (cdadar l))) ; curso vazio
 			(cons (cons d (cons (cons (cons (caadar l) nil)
@@ -16,7 +14,6 @@
 		)
 	)
 )
-)
 
 (DEFUN VINCULAR-DISC-CURSO (DISCIPLINA CURSO BD) 
 	(IF(NULL (CAR DISCIPLINA))
@@ -25,3 +22,65 @@
 			(INSERE BD (CAR DISCIPLINA) CURSO )) 
 	)
 )
+
+
+(defun insereM (l d a)
+	(if (eql (caar l) d)
+		(if (null(caadar l)) 
+			(cons (cons d (cons (cons (cons a nil)
+									(cons (cons (caar (cdadar l)) (cdar (cdadar l))) 
+									(cdr (cdadar l)))) 
+			nil)) (cdr l)) ; nao existe nenhum aluno
+			(if (existeAluno (caadar  l) a)
+				(cons (car l) (cdr l)) ; ja existe aluno
+				(cons (cons d (cons (cons (cons a (cons (car (caadar l)) (cdr (caadar l)) ))
+									(cons (cons (caar (cdadar l)) (cdar (cdadar l))) 
+									(cdr (cdadar l)))) 
+				nil)) (cdr l)) ; existem outros alunos, mas nao existe o que eu vou inserir
+			)
+		)
+		(if(null(car l))
+			(cons (cons d (cons (cons (cons a nil) 
+								 (cons (cons nil nil) nil)) 
+			nil)) nil) ; disciplina nao existe
+			(cons (car l) (insereM (cdr l) d a)) ; se ainda existirem disciplinas pego proxima
+		)
+	)
+)
+
+
+
+(DEFUN VINCULAR-DISC-ALUNO (DISCIPLINAS ALUNO BD) 
+	(IF(NULL (CAR DISCIPLINAS))
+		(CONS (car BD) (cdr BD))
+		(VINCULAR-DISC-ALUNO (CDR DISCIPLINAS) ALUNO 
+			(INSEREM BD (CAR DISCIPLINAS) ALUNO )) 
+	)
+)
+
+(DEFUN MATRICULAR (ALUNOS DISCIPLINAS BD)
+	(IF(NULL (CAR ALUNOS))
+		(CONS (car BD) (cdr BD))
+		(MATRICULAR (CDR ALUNOS) DISCIPLINAS
+			(VINCULAR-DISC-ALUNO DISCIPLINAS (CAR ALUNOS)  BD)) 
+	)
+
+)
+
+(insere '((2 ((2) (3) )) (1 ((2) (3) ))) 1 4)
+(cons (cons 1 (cons (cons (cons 2 nil)(cons (cons 3 nil) 4)) nil)) nil)
+
+(cons (cons 1 (cons (cons (cons 2 nil)
+						  (cons (cons 3 (cons 5 nil)) 4)) 
+			nil)) nil)
+
+(cdr (cdadar '((1((2) (3) . 4))))) > 4 	CURSO
+(cadar '((1((2) (3) . 4)))) > (((2) (3).4)) TUDO
+(cdadar '((1((2) (3) . 4)))) > ((3).4) 
+(caadar '((1((2) (3) . 4)))) > (2) ALUNO
+(car (caadar '((1((2 6 7) (3) . 4))))) > 2
+(cdr (caadar '((1((2 6 7) (3) . 4))))) > (6 7)
+(car (cdadar '((1((2) (3) . 4))))) > (3) PROFESSORES
+(caar (cdadar '((1((2) (3) . 4))))) > 3
+(cdar (cdadar '((1((2) (3 5) . 4))))) > (5)
+(caar '((1((2) (3) . 4)))) > 1 DISCIPLINAS
