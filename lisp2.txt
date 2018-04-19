@@ -81,7 +81,7 @@
 	(if (eql (caar l) d)
 		(if (null(caadar l)) 
 			(cons (cons d (cons (cons (cons (car (caadar l)) (cdr (caadar l)))
-									(cons (cons p nil) ;(inserep '((1 ((2) () . 4))) 1 3) > ((1 ((2) (3 nil) . 4)))
+									(cons (cons p nil) 
 									(cdr (cdadar l)))) 
 			nil)) (cdr l)) ; nao existe nenhum professor
 			(if (existe (car (cdadar  l)) p)
@@ -165,6 +165,133 @@
 
 )
 
+
+(DEFUN EXCLUIRP (L D P)
+	(if (eql (caar l) d)
+		(if (null(car (cdadar  l))) 
+			(cons (car l) (cdr l)) ; nao existe nenhum PROFESSORE
+			(if (existe (car (cdadar l)) P)
+			(cons (cons d (cons (cons (cons (car (caadar l)) (cdr (caadar l)))
+									(cons (excluir (car (cdadar l)) p) 
+									(cdr (cdadar l)))) 
+			nil)) (cdr l))
+			(cons (car l) (cdr l)); existem outros alunos, mas nao existe o que eu vou EXCLUIR 
+			)
+		)
+		(if(null(car l))
+			(cons (car l) (cdr l)) ; disciplina nao existe
+			(cons (car l) (EXCLUIRP (cdr l) d P)) ; se ainda existirem disciplinas pego proxima
+		)
+	)
+)
+
+;TESTES
+;QUANDO SÓ EXISTE O ALUNO QUE SERÁ EXCLUIDO
+(EXCLUIRM '((1 ((2) (3) . 4))) 1 2)  > ((1 (NIL (3) . 4))) ESTA OK
+
+;QUANDO NÃO TEM NADA CADASTRADO
+(EXCLUIRP '() 1 3)
+;QUANDO NÃO TEM NENHUM PROFESSOR CADASTRADO
+(EXCLUIRP '((1 ((2) () . 4))) 1 3)
+;QUANDO SÓ TEM O ELEMENTO QUE SERA EXCLUIDO
+(EXCLUIRP '((1 ((2) (3) . 4))) 1 3)
+(EXCLUIRP '((1 ((2) (3 5) . 4))) 1 3)
+(EXCLUIRP '((0 ((2) (3) . 4))) 1 3)
+(EXCLUIRP '((0 ((2) (3) . 4)) (1 ((2) (3) . 4))) 1 3)
+
+(DEFUN EXCLUIR-DISC-PROF (DISCIPLINAS PROF BD) 
+	(IF(NULL (CAR DISCIPLINAS))
+		(CONS (car BD) (cdr BD))
+		(EXCLUIR-DISC-PROF (CDR DISCIPLINAS) PROF 
+			(EXCLUIRP BD (CAR DISCIPLINAS) PROF )) 
+	)
+)
+;QUANDO SÓ EXISTE O ALUNO QUE SERÁ EXCLUIDO
+(EXCLUIR-DISC-PROF '() 3 `())
+(EXCLUIR-DISC-PROF '() 3 '((1 ((2) (3) . 4))))
+(EXCLUIR-DISC-PROF '(1) 3 '((1 ((2) (3) . 4))))
+
+(DEFUN REMOVER-VINCULO (PROFESSORES DISCIPLINAS BD)
+	(IF(NULL (CAR PROFESSORES))
+		(CONS (car BD) (cdr BD))
+		(REMOVER-VINCULO (CDR PROFESSORES) DISCIPLINAS
+			(EXCLUIR-DISC-PROF DISCIPLINAS (CAR PROFESSORES)  BD)) 
+	)
+)
+
+;TESTE
+(REMOVER-VINCULO `(3 4) `(1 2) `((1 ((2) (3) . 4)) (2 (() (3 4) . 4)))) ;OK
+
+
+(DEFUN DISC-CURSO? (DISCIPLINA BD) 
+	(IF (NULL(CAAR BD))
+		NIL
+		(IF (EQL (CAAR BD) DISCIPLINA )
+			(cdr (cdadar BD))
+			(DISC-CURSO? DISCIPLINA (CDR BD))
+		)
+	)
+)
+;TESTES
+(DISC-CURSO? 1 '())
+(DISC-CURSO? 1 '((1((2) (3)))))
+(DISC-CURSO? 1 '((1((2) (3) . 4))))
+(DISC-CURSO? 1 '((0((2) (3) . 4))))
+(DISC-CURSO? 1 '((0((2) (3) . 5)))(1((2) (3) . 4))))
+
+
+(DEFUN MATRICULADOS? (DISCIPLINA BD)
+	(IF (NULL(CAAR BD))
+		NIL
+		(IF (EQL (CAAR BD) DISCIPLINA )
+			(caadar BD)
+			(MATRICULADOS? DISCIPLINA (CDR BD))
+		)
+	)
+)
+;TESTE
+(MATRICULADOS? 1 '((2 ((2) (3) )) (1 ((2 0) (3 8 9) . 4))))
+
+
+(DEFUN VINCULADOS? (DISCIPLINA BD) 
+	(IF (NULL(CAAR BD))
+		NIL
+		(IF (EQL (CAAR BD) DISCIPLINA )
+			(car (cdadar  BD))
+			(VINCULADOS? DISCIPLINA (CDR BD))
+		)
+	)
+)
+
+;TESTES
+(VINCULADOS? 1 '())
+(VINCULADOS? 1 '((1 ((2) (3) . 4))) )
+
+(DEFUN CURSA? (ALUNO BD) 
+	(IF(NULL(caadar BD))
+		NIL
+		(IF(EXISTE (caadar BD) ALUNO)
+			(CONS (caar BD) (CURSA? ALUNO (CDR BD)))
+			(CURSA? ALUNO (CDR BD))
+		)
+	)
+)
+
+(CURSA? 2 '((1((2) (3) . 4)) (0((5 2 6) (3) . 4))))
+
+(DEFUN MINISTRA? (PROFESSOR BD) 
+	(IF(NULL(car (cdadar BD)))
+		NIL
+		(IF(EXISTE (car (cdadar BD)) PROFESSOR)
+			(CONS (caar BD) (MINISTRA? PROFESSOR (CDR BD)))
+			(MINISTRA? PROFESSOR (CDR BD))
+		)
+	)
+)
+
+
+
+;;;;;;;;;;;;
 (insere '((2 ((2) (3) )) (1 ((2) (3) ))) 1 4)
 (cons (cons 1 (cons (cons (cons 2 nil)(cons (cons 3 nil) 4)) nil)) nil)
 
@@ -181,4 +308,16 @@
 (car (cdadar '((1((2) (3) . 4))))) > (3) PROFESSORES
 (caar (cdadar '((1((2) (3) . 4))))) > 3
 (cdar (cdadar '((1((2) (3 5) . 4))))) > (5)
-(caar '((1((2) (3) . 4)))) > 1 DISCIPLINAS
+(caar '((1((2) (3) . 4)))) > 1 DISCIPLINA
+
+
+
+
+
+
+
+
+
+
+
+
