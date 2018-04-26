@@ -1,0 +1,19 @@
+(DEFUN EXISTE (L A)
+	(IF(NULL(CAR L))
+		NIL
+		(IF(EQL (CAR L ) A)
+			T
+			(EXISTE (CDR L) A)
+		)
+	)
+)
+
+(DEFUN TIRA_REPETIDO (L)
+	(IF (NULL (CAR L))
+		L
+		(IF (EQL(EXISTE (CDR L)(CAR L)) T)
+			(TIRA_REPETIDO (CDR L))
+			(CONS (CAR L)(TIRA_REPETIDO (CDR L)))
+		)
+	)
+)
