@@ -1,0 +1,46 @@
+(DEFUN DISCIPLINAS? (BD)
+	(IF (NULL (CAR BD)) ;lista bd vazia?
+		NIL
+		(IF (EQL (CAAR BD) NIL) ;existe disciplina?
+			(CONS (DISCIPLINAS? (CDR BD)) NIL )
+			(IF (LISTAVAZIA? (CAADAR BD)) ;existe lista de aluno?
+				(CONS (DISCIPLINAS? (CDR BD)) NIL )
+				(IF (LISTAVAZIA? (CAR(CDADAR BD))) ;existe lista de professores?
+					(CONS (DISCIPLINAS? (CDR BD)) NIL )
+					(IF (LISTAVAZIA? (CDR(CDADAR BD))) ;existe curso?
+						(CONS (DISCIPLINAS? (CDR BD)) NIL )
+						(TIRA_REPETIDO (CONS (CAAR BD)(DISCIPLINAS? (CDR BD))))	;se tudo existir, add disciplina na lista
+					)	
+				)
+			)	 
+		)
+	)
+	
+)
+		
+(DEFUN LISTAVAZIA? (L)
+	(IF (NULL L)
+		T
+		NIL
+	)
+)
+
+(DEFUN EXISTE (L A)
+	(IF(NULL(CAR L))
+		NIL
+		(IF(EQL (CAR L ) A)
+			T
+			(EXISTE (CDR L) A)
+		)
+	)
+)
+
+(DEFUN TIRA_REPETIDO (L)
+	(IF (NULL (CAR L))
+		L
+		(IF (EQL(EXISTE (CDR L)(CAR L)) T)
+			(TIRA_REPETIDO (CDR L))
+			(CONS (CAR L)(TIRA_REPETIDO (CDR L)))
+		)
+	)
+)
