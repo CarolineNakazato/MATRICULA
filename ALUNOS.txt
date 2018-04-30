@@ -1,0 +1,57 @@
+(DEFUN ALUNOS? (BD)
+	(IF (NULL (CAR BD))
+		NIL
+		(IF (NULL (CAAR BD)) ;tem disciplina?
+			(CONS (ALUNOS? (CDR BD)) NIL) ;se não
+			(IF (NULL(CAADAR BD)) ;tem lista de aluno?
+				(CONS (ALUNOS? (CDR BD)) NIL) ;se não
+				(TIRA_REPETIDO (INSERE(CAADAR BD) BD))
+			)
+		)
+	)	
+)
+
+(DEFUN INSERE (LISTA BD2)
+	(IF (NULL (CDR LISTA))
+		(CONS (CAR LISTA)(ALUNOS? (CDR BD2)))
+		(CONS (CAR LISTA)(INSERE (CDR LISTA) BD2))
+	)
+)
+								
+(DEFUN EXISTE (L A)
+	(IF(NULL(CAR L))
+		NIL
+		(IF(EQL (CAR L ) A)
+			T
+			(EXISTE (CDR L) A)
+		)
+	)
+)
+
+(DEFUN TIRA_REPETIDO (L) ;BACKUP
+	(IF (NULL (CAR L))
+		L
+		(IF (EQL(EXISTE (CDR L)(CAR L)) T)
+			(TIRA_REPETIDO (CDR L))
+			(CONS (CAR L)(TIRA_REPETIDO (CDR L)))
+		)
+	)
+)
+
+(DEFUN TIRA_REPETIDO (L)
+	(IF (NULL (CAR L))
+		L
+		(IF (EQL(EXISTE (CDR L)(CAR L)) T)
+			(TIRA_REPETIDO (CDR L))
+			(CONS (CAR L)(TIRA_REPETIDO (CDR L)))
+		)
+	)
+)
+
+;(SETQ D'((D1 ((A1 A2) (P1) . C1)) (D2 ((A3) (P2) . C2))(D3 (()(P3) . C3))(D4 ((A4 A5 A6)() . C4))))
+;(ALUNOS? D)
+;(A1 A2 A3 (A4 A5 A6))   
+
+;(SETQ C'((D1 ((A1 A2)(P1) . C1))(D2 ((A3)(P2) . C2))))
+;(ALUNOS? C)
+;(A1 A2 A3)

@@ -1,0 +1,43 @@
+(DEFUN PROFESSORES? (BD)
+	(IF (NULL (CAR BD))
+		NIL
+		(IF (NULL (CAAR BD)) ;tem disciplina?
+			(CONS (PROFESSORES? (CDR BD)) NIL) ;se não
+			(IF (NULL(CAR(CDADAR BD))) ;tem lista de professor?
+				(CONS (PROFESSORES? (CDR BD)) NIL) ;se não
+				(TIRA_REPETIDO (INSERE(CAR(CDADAR BD)) BD))
+			)
+		)
+	)	
+)
+
+(DEFUN INSERE (LISTA BD2)
+	(IF (NULL (CDR LISTA))
+		(CONS (CAR LISTA)(PROFESSORES? (CDR BD2)))
+		(CONS (CAR LISTA)(INSERE (CDR LISTA) BD2))
+	)
+)
+								
+(DEFUN EXISTE (L A)
+	(IF(NULL(CAR L))
+		NIL
+		(IF(EQL (CAR L ) A)
+			T
+			(EXISTE (CDR L) A)
+		)
+	)
+)
+
+(DEFUN TIRA_REPETIDO (L)
+	(IF (NULL (CAR L))
+		L
+		(IF (EQL(EXISTE (CDR L)(CAR L)) T)
+			(TIRA_REPETIDO (CDR L))
+			(CONS (CAR L)(TIRA_REPETIDO (CDR L)))
+		)
+	)
+)
+
+;TESTE
+;(SETQ A'((D1((A1 A2)(P1 P2) . C1))(D2((A1 A3)(P3 P2) . C2))))
+;(P1 P2 P3)
